@@ -1,31 +1,31 @@
 provider "aws" {
-    region = "eu-west-1"
+    region = "${var.region}"
 }
 
 
 //// VPC
 resource "aws_vpc" "lambdas" {
-    cidr_block = "10.0.0.0/16"
+    cidr_block = "${var.vpc_cidr}"
     tags {
-        Name = "lambdas-vpc"
+        Name = "${var.vpc_name}"
     }
 }
 
 
 //// Networks
 resource "aws_subnet" "lambdas-private" {
-    cidr_block = "10.0.0.0/24"
+    cidr_block = "${var.private_subnet_cidr}"
     vpc_id = "${aws_vpc.lambdas.id}"
     tags {
-        Name = "lambdas-private"
+        Name = "${var.private_subnet_name}"
     }
 }
 
 resource "aws_subnet" "lambdas-public" {
-    cidr_block = "10.0.1.0/24"
+    cidr_block = "${var.public_subnet_cidr}"
     vpc_id = "${aws_vpc.lambdas.id}"
     tags {
-        Name = "lambdas-public"
+        Name = "${var.public_subnet_name}"
     }
 }
 
