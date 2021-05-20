@@ -1,79 +1,77 @@
 provider "aws" {
-    region = "${var.region}"
+  region = var.region
 }
-
 
 //// VPC
 resource "aws_vpc" "lambdas" {
-    cidr_block = "${var.vpc_cidr}"
-    tags {
-        Name = "${var.vpc_name}"
-    }
+  cidr_block = var.vpc_cidr
+  tags = {
+    Name = var.vpc_name
+  }
 }
-
 
 //// Networks
 resource "aws_subnet" "lambdas-private" {
-    cidr_block = "${var.private_subnet_cidr}"
-    vpc_id = "${aws_vpc.lambdas.id}"
-    tags {
-        Name = "${var.private_subnet_name}"
-    }
+  cidr_block = var.private_subnet_cidr
+  vpc_id     = aws_vpc.lambdas.id
+  tags = {
+    Name = var.private_subnet_name
+  }
 }
 
 resource "aws_subnet" "lambdas-public" {
-    cidr_block = "${var.public_subnet_cidr}"
-    vpc_id = "${aws_vpc.lambdas.id}"
-    tags {
-        Name = "${var.public_subnet_name}"
-    }
+  cidr_block = var.public_subnet_cidr
+  vpc_id     = aws_vpc.lambdas.id
+  tags = {
+    Name = var.public_subnet_name
+  }
 }
 
 
 //// Gateways
 resource "aws_internet_gateway" "lambdas" {
-    vpc_id = "${aws_vpc.lambdas.id}"
+  vpc_id = aws_vpc.lambdas.id
 }
 
 resource "aws_nat_gateway" "lambdas" {
-    allocation_id = "${aws_eip.lambdas.id}"
-    subnet_id     = "${aws_subnet.lambdas-public.id}"
+  allocation_id = aws_eip.lambdas.id
+  subnet_id     = aws_subnet.lambdas-public.id
 }
 
 
 //// Route tables Private
 resource "aws_route_table" "lambdas-private" {
-    vpc_id = "${aws_vpc.lambdas.id}"
+  vpc_id = aws_vpc.lambdas.id
 
-    route {
-        cidr_block = "0.0.0.0/0"
-        nat_gateway_id = "${aws_nat_gateway.lambdas.id}"
-    }
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.lambdas.id
+  }
 }
 
 resource "aws_route_table_association" "lambdas-private" {
-    route_table_id = "${aws_route_table.lambdas-private.id}"
-    subnet_id = "${aws_subnet.lambdas-private.id}"
+  route_table_id = aws_route_table.lambdas-private.id
+  subnet_id      = aws_subnet.lambdas-private.id
 }
 
 
 //// Route tables Public
 resource "aws_route_table" "lambdas-public" {
-    vpc_id = "${aws_vpc.lambdas.id}"
+  vpc_id = aws_vpc.lambdas.id
 
-    route {
-        cidr_block = "0.0.0.0/0"
-        gateway_id = "${aws_internet_gateway.lambdas.id}"
-    }
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.lambdas.id
+  }
 }
 
 resource "aws_route_table_association" "lambdas-public" {
-    route_table_id = "${aws_route_table.lambdas-public.id}"
-    subnet_id = "${aws_subnet.lambdas-public.id}"
+  route_table_id = aws_route_table.lambdas-public.id
+  subnet_id      = aws_subnet.lambdas-public.id
 }
 
 
 //// ElasticIp
 resource "aws_eip" "lambdas" {
-    vpc      = true
+  vpc = true
 }
