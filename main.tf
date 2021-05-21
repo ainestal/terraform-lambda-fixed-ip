@@ -2,6 +2,7 @@ provider "aws" {
   region = var.region
 }
 
+
 //// VPC
 resource "aws_vpc" "lambdas" {
   cidr_block = var.vpc_cidr
@@ -9,6 +10,7 @@ resource "aws_vpc" "lambdas" {
     Name = var.vpc_name
   }
 }
+
 
 //// Networks
 resource "aws_subnet" "lambdas-private" {
@@ -74,4 +76,31 @@ resource "aws_route_table_association" "lambdas-public" {
 //// ElasticIp
 resource "aws_eip" "lambdas" {
   vpc = true
+}
+
+resource "aws_security_group" "allow_tls" {
+  name        = "allow_tls"
+  description = "Allow TLS inbound traffic"
+  vpc_id      = aws_vpc.lambdas.id
+
+  ingress {
+    description      = "TLS from VPC"
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    cidr_blocks      = [aws_vpc.lambdas.cidr_block]
+    ipv6_cidr_blocks = [aws_vpc.lambdas.ipv6_cidr_block]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = {
+    Name = "allow_tls"
+  }
 }
