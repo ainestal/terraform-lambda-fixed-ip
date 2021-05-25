@@ -79,6 +79,9 @@ resource "aws_eip" "lambdas" {
 }
 
 resource "aws_security_group" "allow_tls" {
+  depends_on = [
+    aws_vpc.lambdas
+  ]
   name        = "allow_tls"
   description = "Allow TLS inbound traffic"
   vpc_id      = aws_vpc.lambdas.id
@@ -88,8 +91,8 @@ resource "aws_security_group" "allow_tls" {
     from_port        = 443
     to_port          = 443
     protocol         = "tcp"
-    cidr_blocks      = [aws_vpc.lambdas.cidr_block]
-    ipv6_cidr_blocks = [aws_vpc.lambdas.ipv6_cidr_block]
+    cidr_blocks      = [var.vpc_cidr]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   egress {
