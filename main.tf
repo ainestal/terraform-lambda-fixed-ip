@@ -76,6 +76,9 @@ resource "aws_route_table_association" "lambdas-public" {
 //// ElasticIp
 resource "aws_eip" "lambdas" {
   vpc = true
+  tags = {
+    Name = var.eip_name
+  }
 }
 
 resource "aws_security_group" "allow_tls" {
