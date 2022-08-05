@@ -56,5 +56,5 @@ resource "aws_lambda_function" "test_lambda" {
  
  
   ## Dependencies
-   - Terraform >= 0.9.x , you can download it from [terraform downloads](https://www.terraform.io/downloads.html)
+   - Terraform >= 0.14.x , you can download it from [terraform downloads](https://www.terraform.io/downloads.html)
    - AWS account
