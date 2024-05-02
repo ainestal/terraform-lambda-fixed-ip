@@ -75,7 +75,7 @@ resource "aws_route_table_association" "lambdas-public" {
 
 //// ElasticIp
 resource "aws_eip" "lambdas" {
-  vpc = true
+  domain = "vpc"
   tags = {
     Name = var.eip_name
   }
