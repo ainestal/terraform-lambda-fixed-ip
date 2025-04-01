@@ -6,9 +6,12 @@ provider "aws" {
 //// VPC
 resource "aws_vpc" "lambdas" {
   cidr_block = var.vpc_cidr
-  tags = {
-    Name = var.vpc_name
-  }
+  tags = merge(
+    {
+      Name = var.vpc_name
+    },
+    var.custom_tags
+  )
 }
 
 
@@ -38,6 +41,12 @@ resource "aws_internet_gateway" "lambdas" {
 resource "aws_nat_gateway" "lambdas" {
   allocation_id = aws_eip.lambdas.id
   subnet_id     = aws_subnet.lambdas-public.id
+  tags = merge(
+    {
+      Name = var.nat_gateway_name
+    },
+    var.custom_tags
+  )
 }
 
 
@@ -76,9 +85,12 @@ resource "aws_route_table_association" "lambdas-public" {
 //// ElasticIp
 resource "aws_eip" "lambdas" {
   domain = "vpc"
-  tags = {
-    Name = var.eip_name
-  }
+  tags = merge(
+    {
+      Name = var.eip_name
+    },
+    var.custom_tags
+  )
 }
 
 resource "aws_security_group" "allow_tls" {
