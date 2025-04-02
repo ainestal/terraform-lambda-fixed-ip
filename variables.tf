@@ -8,3 +8,11 @@ variable "public_subnet_name" { default = "lambdas-public" }
 variable "eip_name" {
     default ="Elastic IP for Lambdas VPC"
 }
+variable "nat_gateway_name" {
+    default = "NAT Gateway for Lambdas VPC"
+}
+variable "custom_tags" {
+  description = "A map of custom tags to apply to resources"
+  type        = map(string)
+  default     = {}
+}
